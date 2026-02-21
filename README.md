@@ -72,57 +72,39 @@ No server setup required as the game is fully front-end.
 
 ![Screenshot1]
 <img width="1321" height="778" alt="Screenshot 2026-02-21 090113" src="https://github.com/user-attachments/assets/c19ebfb0-8dde-456a-a142-e836430b357d" />
+{ Entering page where you can select a vehicle {car/bike} that you want to drive/ride. then Click on 'START GAME' to play the game. }
 
-*Add caption explaining what this shows*
+![Screenshot2]
+<img width="1919" height="903" alt="Screenshot 2026-02-21 090210" src="https://github.com/user-attachments/assets/e1260a9c-0f42-4efd-9648-4712e26cb3b4" />
 
-![Screenshot2](Add screenshot 2 here with proper name)
-*Add caption explaining what this shows*
+{ interface when you select 'Car', whenever you're making a mistake in driving, it will raise an warning message until you correct your mistake }
 
-![Screenshot3](Add screenshot 3 here with proper name)
-*Add caption explaining what this shows*
+![Screenshot3]
+<img width="1915" height="894" alt="Screenshot 2026-02-21 090409" src="https://github.com/user-attachments/assets/70f701c3-80f2-4c75-a351-c49c9022aa00" />
+{ interface when you select 'Bike', whenever you're making a mistake in riding, it will raise an warning message  }
+
+some of the warning messages in both car and bike :
+- stop for pedestrian
+- vehicle collision
+- changing lane
+- red traffic signal etc...
 
 #### Diagrams
 
 **System Architecture:**
 
-![Architecture Diagram](docs/architecture.png)
-*Explain your system architecture - components, data flow, tech stack interaction*
+User interacts with browser → JS logic handles controls, vehicle movement, collisions → localStorage saves selection → Game updates in real-time with requestAnimationFrame.
 
 **Application Workflow:**
 
 ![Workflow](docs/workflow.png)
-*Add caption explaining your workflow*
 
----
+Select vehicle → 2. Start game → 3. Navigate lanes & avoid collisions → 4. Score updates → 5. Receive warnings for violations
 
-### For Hardware:
-
-#### Schematic & Circuit
-
-![Circuit](Add your circuit diagram here)
-*Add caption explaining connections*
-
-![Schematic](Add your schematic diagram here)
-*Add caption explaining the schematic*
-
-#### Build Photos
-
-![Team](Add photo of your team here)
-
-![Components](Add photo of your components here)
-*List out all components shown*
-
-![Build](Add photos of build process here)
-*Explain the build steps*
-
-![Final](Add photo of final product here)
-*Explain the final build*
-
----
 
 ## Additional Documentation
+https://drive.google.com/file/d/1GLMkD86VaP7nE3ZgRLm1QfyW3xgwvlPH/view?usp=drive_link
 
-### For Web Projects with Backend:
 
 #### API Documentation
 
@@ -411,4 +393,5 @@ Made with ❤️ at TinkerHub
 # RoadWise
 RoadWise is an interactive road safety simulator that teaches users safe driving practices through realistic traffic scenarios. With lanes, signals, pedestrians, and unexpected events, users get instant feedback on their decisions, promoting awareness, responsible driving, and accident prevention in a fun, engaging way.
 >>>>>>> ae4bbfdbaccceae287c86d6b4ccd361fde4746ea
+
 
