@@ -14,7 +14,7 @@
 - Member 2: Krishna Krishnakumar - MUTHOOT INSTITUTE OF TECHNOLOGY & SCIENCE
 
 ### Hosted Project Link
-[mention your project hosted link here]
+https://road-wise-five.vercel.app/
 
 ### Project Description
 RoadWise is an interactive web-based road safety simulation designed to educate users about real-life traffic scenarios and safe driving practices. The platform creates a virtual driving environment where users can experience common road situations and learn how to respond correctly.
@@ -43,37 +43,26 @@ RoadWise provides an interactive, web-based driving simulator where users experi
 
 ## Features
 
-List the key features of your project:
-- Feature 1: [Description]
-- Feature 2: [Description]
-- Feature 3: [Description]
-- Feature 4: [Description]
-
----
-
-## Implementation
+Vehicle selection (car/bike)
+Lane and road traffic simulation
+Traffic signals with violation detection (red/green)
+Pedestrian crossings and zebra crossings
+Collision detection and real-time warnings
+Score tracking for gamified learning
+Neon-themed interactive UI
 
 ### For Software:
 
-#### Installation
-```bash
-[Installation commands - e.g., npm install, pip install -r requirements.txt]
-```
+## Implementation
+Installation
+# Clone the repository
+git clone https://github.com/kriishna-44/RoadWise.git
+# Open index.html in a browser to start
+Run
 
-#### Run
-```bash
-[Run commands - e.g., npm start, python app.py]
-```
+Simply open index.html in any modern browser (Chrome, Edge, Firefox).
+No server setup required as the game is fully front-end.
 
-### For Hardware:
-
-#### Components Required
-[List all components needed with specifications]
-
-#### Circuit Setup
-[Explain how to set up the circuit]
-
----
 
 ## Project Documentation
 
@@ -81,7 +70,9 @@ List the key features of your project:
 
 #### Screenshots (Add at least 3)
 
-![Screenshot1](Add screenshot 1 here with proper name)
+![Screenshot1]
+<img width="1321" height="778" alt="Screenshot 2026-02-21 090113" src="https://github.com/user-attachments/assets/c19ebfb0-8dde-456a-a142-e836430b357d" />
+
 *Add caption explaining what this shows*
 
 ![Screenshot2](Add screenshot 2 here with proper name)
@@ -420,3 +411,4 @@ Made with ❤️ at TinkerHub
 # RoadWise
 RoadWise is an interactive road safety simulator that teaches users safe driving practices through realistic traffic scenarios. With lanes, signals, pedestrians, and unexpected events, users get instant feedback on their decisions, promoting awareness, responsible driving, and accident prevention in a fun, engaging way.
 >>>>>>> ae4bbfdbaccceae287c86d6b4ccd361fde4746ea
+
