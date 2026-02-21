@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>RoadWise</title>
+
+<style>
+body{
+margin:0;
+overflow:hidden;
+background:linear-gradient(#87ceeb,#0d0d1a);
+font-family:Arial;
+}
+
+#game{
+position:relative;
+width:100%;
+height:100vh;
+overflow:hidden;
+}
+
+#road{
+position:absolute;
+left:50%;
+transform:translateX(-50%);
+width:400px;
+height:100%;
+background:black;
+}
+
+.lane-divider{
+position:absolute;
+left:50%;
+transform:translateX(-2px);
+width:4px;
+height:100%;
+background:repeating-linear-gradient(
+to bottom,
+white 0 20px,
+transparent 20px 40px
+);
+}
+
+#vehicle{
+position:absolute;
+width:50px;
+height:90px;
+bottom:60px;
+z-index:20;
+}
+
+.other{
+position:absolute;
+width:50px;
+height:90px;
+}
+
+.pedestrian{
+position:absolute;
+width:25px;
+height:40px;
+background:red;
+z-index:25;
+}
+
+.zebra{
+position:absolute;
+width:400px;
+height:40px;
+background:repeating-linear-gradient(
+90deg,
+white 0 10px,
+black 10px 20px
+);
+}
+
+#signal{
+position:absolute;
+left:calc(50% + 220px);
+top:80px;
+width:30px;
+height:90px;
+background:#222;
+border-radius:10px;
+padding:5px;
+}
+
+.light{
+width:20px;
+height:20px;
+border-radius:50%;
+margin:5px auto;
+background:#333;
+}
+
+#score{
+position:absolute;
+top:10px;
+left:10px;
+color:#ff00ff;
+font-size:18px;
+}
+
+.warning{
+display:none;
+position:absolute;
+top:40%;
+left:50%;
+transform:translate(-50%,-50%);
+background:black;
+border:3px solid #ff00ff;
+padding:20px;
+border-radius:10px;
+color:#ff00ff;
+z-index:100;
+text-align:center;
+}
+
+.warning button{
+margin-top:10px;
+padding:5px 20px;
+}
+</style>
+</head>
+
+<body>
+<div id="game">
+<div id="road"></div>
+<div class="lane-divider"></div>
+
+<img id="vehicle" src="assets/car.png">
+
+<div id="signal">
+<div id="red" class="light"></div>
+<div id="green" class="light"></div>
+</div>
+
+<div id="score">Score: 0</div>
+
+<div class="warning" id="warnBox">
+<p id="warnText"></p>
+<button onclick="closeWarn()">OK</button>
+</div>
+</div>
+
+<script>
+const game = document.getElementById("game");
+const vehicle = document.getElementById("vehicle");
+const warnBox = document.getElementById("warnBox");
+const warnText = document.getElementById("warnText");
+const scoreDisplay = document.getElementById("score");
+
+let savedVehicle = localStorage.getItem("rw_vehicle");
+
+if(savedVehicle === "bike"){
+    vehicle.src = "assets/bike.png";
+}
+else{
+    vehicle.src = "assets/car.png";
+}
+
+let roadLeft = (window.innerWidth-400)/2;
+let roadRight = roadLeft+400;
+
+let leftLanes=[roadLeft+60,roadLeft+140];
+let rightLanes=[roadLeft+240,roadLeft+320];
+
+let playerLane=0;
+let vehicleX=rightLanes[playerLane];
+vehicle.style.left=vehicleX+"px";
+
+let speed=0;
+let maxSpeed=7;
+let keys={};
+let score=0;
+let violation=false;
+let signal="green";
+
+let others=[];
+let pedestrians=[];
+let zebraActive=false;
+
+/* ---------- WARNING ---------- */
+function showWarn(msg){
+if(violation) return;
+violation=true;
+warnText.innerText=msg;
+warnBox.style.display="block";
+}
+
+function closeWarn(){
+warnBox.style.display="none";
+violation=false;
+}
+
+/* ---------- TRAFFIC SIGNAL ---------- */
+function toggleSignal(){
+signal=signal==="green"?"red":"green";
+document.getElementById("red").style.background=
+signal==="red"?"red":"#400";
+document.getElementById("green").style.background=
+signal==="green"?"lime":"#040";
+}
+setInterval(toggleSignal,6000);
+toggleSignal();
+
+/* ---------- CONTROLS ---------- */
+document.addEventListener("keydown",e=>keys[e.key]=true);
+document.addEventListener("keyup",e=>keys[e.key]=false);
+
+/* ---------- COLLISION ---------- */
+function collide(a,b){
+let r1=a.getBoundingClientRect();
+let r2=b.getBoundingClientRect();
+return !(r1.bottom<r2.top||r1.top>r2.bottom||r1.right<r2.left||r1.left>r2.right);
+}
+
+/* ---------- PLAYER ---------- */
+function movePlayer(){
+
+// smooth movement
+if(keys["ArrowLeft"]) vehicleX -= 5;
+if(keys["ArrowRight"]) vehicleX += 5;
+
+// acceleration
+if(keys["ArrowUp"]) speed += 0.2;
+else speed *= 0.95;
+
+if(speed > maxSpeed) speed = maxSpeed;
+
+// 🚫 CROSSING CENTER WHITE LINE CHECK
+let centerLine = roadLeft + 200;  // middle of 400px road
+
+// if player vehicle right side goes into opposite lane
+if(vehicleX < centerLine - 50){
+    showWarn("Wrong side driving! Lane violation!");
+}
+
+// prevent going outside road
+if(vehicleX < roadLeft) vehicleX = roadLeft;
+if(vehicleX > roadRight - 50) vehicleX = roadRight - 50;
+
+// 🚦 RED SIGNAL CHECK
+if(signal === "red" && speed > 2){
+    showWarn("Red Signal Violation!");
+}
+
+vehicle.style.left = vehicleX + "px";
+}
+/* ---------- SPAWN VEHICLES (NO OVERLAP) ---------- */
+function spawnVehicle(){
+let laneType=Math.random()<0.5?"left":"right";
+let lanes=laneType==="left"?leftLanes:rightLanes;
+let laneIndex=Math.floor(Math.random()*2);
+
+if(others.find(v=>v.dataset.lane==laneIndex && v.dataset.side==laneType))
+return;
+
+let ov=document.createElement("img");
+ov.src="assets/player_car.png";
+ov.className="other";
+ov.dataset.lane=laneIndex;
+ov.dataset.side=laneType;
+ov.style.left=lanes[laneIndex]+"px";
+
+if(laneType==="left"){
+ov.style.top=window.innerHeight+"px";
+ov.dataset.dir="up";
+}else{
+ov.style.top="-120px";
+ov.dataset.dir="down";
+}
+
+game.appendChild(ov);
+others.push(ov);
+}
+
+/* ---------- PEDESTRIAN + ZEBRA ---------- */
+function spawnPedestrian(){
+if(zebraActive) return;
+
+zebraActive=true;
+
+let zebra=document.createElement("div");
+zebra.className="zebra";
+zebra.style.left=roadLeft+"px";
+zebra.style.top="-40px";
+game.appendChild(zebra);
+
+let p=document.createElement("div");
+p.className="pedestrian";
+p.style.left=roadLeft+"px";
+p.style.top="-40px";
+game.appendChild(p);
+
+pedestrians.push({zebra,p});
+}
+
+/* ---------- UPDATE ---------- */
+function update(){
+
+movePlayer();
+
+/* vehicles */
+for(let i=others.length-1;i>=0;i--){
+let ov=others[i];
+
+if(ov.dataset.dir==="down")
+ov.style.top=parseFloat(ov.style.top)+speed+"px";
+else
+ov.style.top=parseFloat(ov.style.top)-(speed+2)+"px";
+
+if(collide(vehicle,ov))
+showWarn("Collision with vehicle!");
+
+if(parseFloat(ov.style.top)>window.innerHeight||
+parseFloat(ov.style.top)<-150){
+ov.remove();
+others.splice(i,1);
+}
+}
+
+/* pedestrian */
+for(let i=pedestrians.length-1;i>=0;i--){
+let obj=pedestrians[i];
+let zebra=obj.zebra;
+let p=obj.p;
+
+zebra.style.top=parseFloat(zebra.style.top)+speed+"px";
+p.style.top=parseFloat(p.style.top)+speed+"px";
+p.style.left=parseFloat(p.style.left)+1+"px";
+
+if(speed>2 && collide(vehicle,p))
+showWarn("Stop for Pedestrian!");
+
+if(parseFloat(zebra.style.top)>window.innerHeight){
+zebra.remove();
+p.remove();
+pedestrians.splice(i,1);
+zebraActive=false;
+}
+}
+
+score+=Math.floor(speed);
+scoreDisplay.innerText="Score: "+score;
+
+requestAnimationFrame(update);
+}
+
+setInterval(spawnVehicle,1500);
+setInterval(spawnPedestrian,5000);
+
+update();
+</script>
+</body>
+</html>
